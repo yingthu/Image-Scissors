@@ -29,6 +29,9 @@
  *		rsltImg:		the filtered image of the same size as original image.
  *						it is a valid pointer ( allocated already ).
  */
+ //Hang's comment: 1)selection is not used
+ //                2)length of selection should be equal to length of origImg, rgb considered
+ //                3)knlWidth and knlHeight should all be odd numbers
 
 void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned char* selection,
                   int imgWidth, int imgHeight,
@@ -36,9 +39,46 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
                   double scale, double offset)
 {
     // Note: copying origImg to rsltImg is NOT the solution, it does nothing!
+	int index;
+	int newpixelval;
+	int nowcorry,nowcorrx;
+	int nowkernelvalue,nowpixelindex,nowpixelvalue;
+	for(int j=0;j<imgHeight;j++)
+	{
+		for(int i=0;i<imgWidth;i++)
+		{
+			for(int rgb=0;rgb<3;rgb++)
+			{
+				index=cordinate2idx(i,j,rgb,imgWidth);
+				//if(((int)selection[index])==1)
+				{
+					newpixelval=0;
+					for(int jj=0;jj<knlHeight;jj++)
+					{
+						for(int ii=0;ii<knlWidth;ii++)
+						{
+							nowcorry=j-(knlHeight-1)/2+jj;
+							nowcorrx=i-(knlWidth-1)/2+ii;
+							if((nowcorry>=0)&&(nowcorry<imgHeight)&&(nowcorrx>=0)&&(nowcorrx<imgWidth))
+							{
+								nowkernelvalue=kernel[jj*knlHeight+ii];
+								nowpixelindex=cordinate2idx(nowcorrx,nowcorry,rgb,imgWidth);
+								nowpixelvalue=(int)origImg[nowpixelindex];
+								newpixelval+=(nowpixelvalue*nowkernelvalue);
+							}
+						}
+					}
+					rsltImg[index]=newpixelval/scale+offset;
+					//if((j<5)&&(i<5))
+						//cout<<"newpixelval:"<<newpixelval<<",rslt:"<<rsltImg[index]<<",index:"<<index<<endl;
+				}
+				//else
+					rsltImg[index]=((int)origImg)*1.0;
+			}
+		}
+	}
 
-printf("TODO: %s:%d\n", __FILE__, __LINE__); 
-
+	printf("TODO: %s:%d\n", __FILE__, __LINE__);
 }
 
 /************************ END OF TODO 2 **************************/
@@ -74,9 +114,38 @@ void pixel_filter(double rsltPixel[3], int x, int y, const unsigned char* origIm
                   const double* kernel, int knlWidth, int knlHeight,
                   double scale, double offset)
 {
-printf("TODO: %s:%d\n", __FILE__, __LINE__); 
+	int newpixelval;
+	int nowcorry,nowcorrx;
+	int nowkernelvalue,nowpixelindex,nowpixelvalue;
+	for(int rgb=0;rgb<3;rgb++)
+	{
+		newpixelval=0;
+		for(int jj=0;jj<knlHeight;jj++)
+		{
+			for(int ii=0;ii<knlWidth;ii++)
+			{
+				nowcorry=y-(knlHeight-1)/2+jj;
+				nowcorrx=x-(knlWidth-1)/2+ii;
+				if((nowcorry>=0)&&(nowcorry<imgHeight)&&(nowcorrx>=0)&&(nowcorrx<imgWidth))
+				{
+					nowkernelvalue=kernel[jj*knlHeight+ii];
+					nowpixelindex=cordinate2idx(nowcorrx,nowcorry,rgb,imgWidth);
+					nowpixelvalue=(int)origImg[nowpixelindex];
+					newpixelval+=(nowpixelvalue*nowkernelvalue);
+				}
+			}
+		}
+		rsltPixel[rgb]=newpixelval/scale+offset;
+	}
 
+	printf("TODO: %s:%d\n", __FILE__, __LINE__); 
 }
 
 /************************ END OF TODO 3 **************************/
 
+int cordinate2idx(int x,int y,int rgb,int imgWidth)
+{
+	int index;
+	index=3*(y*imgWidth+x)+rgb;
+	return index;
+}
