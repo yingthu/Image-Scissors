@@ -32,8 +32,35 @@ inline unsigned char PIXEL(const unsigned char* p, int i, int j, int c, int widt
 
 void InitNodeBuf(Node* nodes, const unsigned char* img, int imgWidth, int imgHeight)
 {
-printf("TODO: %s:%d\n", __FILE__, __LINE__); 
+	// Initializes the column and row
+	// nodes size: imgWidth*imgHeight, img size: 3*imgWidth*imgHeight
+	for (int row = 0; row < imgHeight; row++)
+		for (int column = 0; column < imgWidth; column++)
+		{
+				nodes[row*imgWidth+column].column = column;
+				nodes[row*imgWidth+column].row = row;
+		}
 
+	// Initializes the linkCost
+	double maxD = 0.0000;
+	double *rsltImg;
+	for (int knlNum = 0; knlNum < 8; knlNum++)
+	{
+		rsltImg = new double[imgWidth*imgHeight*3];
+		image_filter(rsltImg, img, NULL, imgWidth, imgHeight, kernels[knlNum], 3, 3, 1, 0);
+		for (int row = 0; row < imgHeight; row++)
+			for (int column = 0; column < imgWidth; column++)
+			{
+				int rPos = 3*(row*imgWidth+column);
+				double Dlink = sqrt((rsltImg[rPos]*rsltImg[rPos]+rsltImg[rPos+1]*rsltImg[rPos+1]+rsltImg[rPos+2]*rsltImg[rPos+2]) / 3);
+				nodes[rPos].linkCost[knlNum] = Dlink;
+				if (Dlink > maxD) maxD = Dlink;
+			}
+		delete [] rsltImg;
+	}
+	for (int knlNum = 0; knlNum < 8; knlNum++)
+		for (int i = 0; i < imgWidth*imgHeight; i++)
+			nodes[i].linkCost[knlNum] = maxD - nodes[i].linkCost[knlNum];
 }
 /************************ END OF TODO 1 ***************************/
 
