@@ -6,7 +6,7 @@
 
 #include "correlation.h"
 #include "iScissor.h"
-#include <queue>
+#include <iostream>
 using namespace std;
 
 const double linkLengths[8] = { 1.0, SQRT2, 1.0, SQRT2, 1.0, SQRT2, 1.0, SQRT2 };
@@ -90,20 +90,6 @@ static int offsetToLinkIndex(int dx, int dy)
  *		the prevNode field of each node to its predecessor along the minimum
  *		cost path from the seed to that node.
  */
-struct pqnode
-{
-    int idx;
-    double key;
-    pqnode(int a=0, double b=0):idx(a), key(b){}
-};
-
-struct cmp
-{
-    bool operator()(pqnode a, pqnode b)
-	{
-        return a.key > b.key;
-    }
-};
 
 int indexingNeighbors(int i,int j)
 {
@@ -130,33 +116,32 @@ int indexingNeighbors(int i,int j)
 void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const unsigned char* selection, int numExpanded)
 {
 	//state:INITIAL:0,EXPANDED:1,ACTIVE:2
-	pqnode current;
-	int currentindex;
 	int neighborList[8];
 	int currentx,currenty;
 	int rx,ry;
 	int rindex;	
-	pqnode tmpnode;
+	int Exnum=0;
+	Node* q;
 	
-	priority_queue<pqnode,vector<pqnode>,cmp> pq;
-	priority_queue<pqnode,vector<pqnode>,cmp> tmp;
+	CTypedPtrHeap<Node> pq;
 	//initialize each node to INITIAL
 	for(int i=0;i<(width*height);i++)
 		nodes[i].state=0;
 	//set totalCost of seed be 0
 	nodes[seedY*width+seedX].totalCost=0.0;
 	//insert seed into pq
-	pq.push(pqnode(seedY*width+seedX,0.0));
-	while(!pq.empty())
+	pq.Insert(nodes+seedY*width+seedX);
+	while(!pq.IsEmpty())
 	{
 		//extract node q(current node)
-		current=pq.top();
-		pq.pop();
-		currentindex=current.idx;
+		q=pq.ExtractMin();
 		//make q as EXPANDED
-		nodes[currentindex].state=1;
-		currentx=currentindex%width;
-		currenty=(currentindex-currentx)/width;
+		q->state=1;
+		Exnum++;
+		if(Exnum==numExpanded)
+			break;
+		currentx=q->column;
+		currenty=q->row;
 		//for each existing neighbor r of q
 		for(int i=-1;i<=1;i++)
 		{
@@ -174,40 +159,19 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
 						//if r is still INITIAL
 						if(nodes[rindex].state==0)
 						{
-							pq.push(pqnode(rindex,nodes[currentindex].totalCost+nodes[currentindex].linkCost[indexingNeighbors(i,j)]));
-							nodes[rindex].totalCost=nodes[currentindex].totalCost+nodes[currentindex].linkCost[indexingNeighbors(i,j)];
+							nodes[rindex].totalCost=q->totalCost+q->linkCost[indexingNeighbors(i,j)];
 							nodes[rindex].state=2;
+							pq.Insert(nodes+rindex);
 						}
 						else
 						{
 							//if r is ACTIVE
-							//this is the stupid part, here if the "less" criterion is met, we need to: 1)update r's totalCost in nodes,
-							//and 2)update the key of corresponding pqnode of r in pq to the new totalCost
-							//so how can we find the corresponding pqnode of r in pq?
-							//my way is to pop pqnodes from pq one by one until the right pqnode is found, and then
-							//push back all the poped pqnodes...
-							//this is not the most efficient way, but i can only think of this using the priority_queue in STL
 							if(nodes[rindex].state==2)
 							{
-								if((nodes[currentindex].totalCost+nodes[currentindex].linkCost[indexingNeighbors(i,j)])<nodes[rindex].totalCost)
+								if((q->totalCost+q->linkCost[indexingNeighbors(i,j)])<nodes[rindex].totalCost)
 								{
-									nodes[rindex].totalCost=nodes[currentindex].totalCost+nodes[currentindex].linkCost[indexingNeighbors(i,j)];
-									while(true)
-									{
-										tmpnode=pq.top();
-										pq.pop();
-										if(tmpnode.idx==rindex)
-											break;
-										else
-											tmp.push(pqnode(tmpnode.idx,tmpnode.key));
-									}
-									pq.push(pqnode(rindex,nodes[rindex].totalCost));
-									while(!tmp.empty())
-									{
-										tmpnode=tmp.top();
-										tmp.pop();
-										pq.push(pqnode(tmpnode.idx,tmpnode.key));
-									}
+									nodes[rindex].totalCost=q->totalCost+q->linkCost[indexingNeighbors(i,j)];
+									pq.Update(nodes+rindex);
 								}
 							}
 						}
@@ -216,6 +180,7 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
 			}
 		}				
 	}
+	cout<<seedX<<endl<<seedY<<endl;
 	
 	printf("TODO: %s:%d\n", __FILE__, __LINE__); 
 }
