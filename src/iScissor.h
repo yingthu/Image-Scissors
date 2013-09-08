@@ -179,4 +179,6 @@ struct Seed {
     }
 };
 
+int indexingNeighbors(int i,int j);
+
 #endif
