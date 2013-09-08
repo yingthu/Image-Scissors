@@ -232,13 +232,21 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
  *		Notice that the seed node in the buffer has a NULL predecessor.
  *		And you want to insert a *pointer* to the Node into path, e.g.,
  *		insert nodes+j*width+i (or &(nodes[j*width+i])) if you want to insert node at (i,j), instead of nodes[nodes+j*width+i]!!!
- *		after the procedure, the seed should be the head of path and the input code should be the tail
+ *		after the procedure, the seed should be the head of path and the input node should be the tail
  */
 
 void MinimumPath(CTypedPtrDblList <Node>* path, int freePtX, int freePtY, Node* nodes, int width, int height)
 {
-printf("TODO: %s:%d\n", __FILE__, __LINE__); 
-
+	// path is empty initially
+	// nodes are connected by min cost
+	// We only need to find a way connecting seed and input node
+	Node* currentLoc = nodes+freePtY*width+freePtX;
+	// List head is seed if current location is null
+	while (currentLoc != NULL)
+	{
+		CTypedPtrDblElement<Node>* currentNode = path->AddHead(currentLoc);
+		currentLoc = currentNode->Data()->prevNode;
+	}
 }
 /************************ END OF TODO 5 ***************************/
 
