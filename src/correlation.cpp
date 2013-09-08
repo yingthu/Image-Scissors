@@ -47,9 +47,10 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
     // Note: copying origImg to rsltImg is NOT the solution, it does nothing!
 	/*
 	int index;
-	int newpixelval;
+	double newpixelval;
 	int nowcorry,nowcorrx;
-	int nowkernelvalue,nowpixelindex,nowpixelvalue;
+	int nowpixelindex,nowpixelvalue;
+	double nowkernelvalue;
 	for(int j=0;j<imgHeight;j++)
 	{
 		for(int i=0;i<imgWidth;i++)
@@ -68,16 +69,14 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
 							nowcorrx=i-(knlWidth-1)/2+ii;
 							if((nowcorry>=0)&&(nowcorry<imgHeight)&&(nowcorrx>=0)&&(nowcorrx<imgWidth))
 							{
-								nowkernelvalue=kernel[jj*knlHeight+ii];
+								nowkernelvalue=kernel[jj*knlWidth+ii];
 								nowpixelindex=cordinate2idx(nowcorrx,nowcorry,rgb,imgWidth);
-								nowpixelvalue=origImg[nowpixelindex];
+								nowpixelvalue=(int)origImg[nowpixelindex];
 								newpixelval+=(nowpixelvalue*nowkernelvalue);
 							}
 						}
 					}
 					rsltImg[index]=newpixelval/scale+offset;
-					//if((j<5)&&(i<5))
-						//cout<<"newpixelval:"<<newpixelval<<",rslt:"<<rsltImg[index]<<",index:"<<index<<endl;
 				}
 				//else
 					//rsltImg[index]=((int)origImg)*1.0;
@@ -139,9 +138,10 @@ void pixel_filter(double rsltPixel[3], int x, int y, const unsigned char* origIm
                   double scale, double offset)
 {
 	/*
-	int newpixelval;
+	double newpixelval;
 	int nowcorry,nowcorrx;
-	int nowkernelvalue,nowpixelindex,nowpixelvalue;
+	int nowpixelindex,nowpixelvalue;
+	double nowkernelvalue;
 	for(int rgb=0;rgb<3;rgb++)
 	{
 		newpixelval=0;
