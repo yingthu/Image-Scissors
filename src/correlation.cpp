@@ -73,7 +73,7 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
 						//cout<<"newpixelval:"<<newpixelval<<",rslt:"<<rsltImg[index]<<",index:"<<index<<endl;
 				}
 				//else
-					rsltImg[index]=((int)origImg)*1.0;
+					//rsltImg[index]=((int)origImg)*1.0;
 			}
 		}
 	}

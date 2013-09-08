@@ -2,8 +2,8 @@
 #define CONVOLVE_H
 
 #include "imgflt.h"
-#include <iostream>
-using namespace std;
+//#include <iostream>
+//using namespace std;
 
 void image_filter(double *rsltImg, const unsigned char *origImg, const unsigned char *selection, 
 			int imgWidth, int imgHeight, 
