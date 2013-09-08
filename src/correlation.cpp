@@ -32,6 +32,12 @@
  //Hang's comment: 1)selection is not used
  //                2)length of selection should be equal to length of origImg, rgb considered
  //                3)knlWidth and knlHeight should all be odd numbers
+ 
+ // image_filter & pixel_filter modified by Yingchuan
+ // 1) selection applied
+ // 2) problem that image_filter didn't work in InitNodeBuf solved
+ // 3) selection length is equal to node length (targeting on each pixel)
+ // 4) speed up the function
 
 void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned char* selection,
                   int imgWidth, int imgHeight,
@@ -39,6 +45,7 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
                   double scale, double offset)
 {
     // Note: copying origImg to rsltImg is NOT the solution, it does nothing!
+	/*
 	int index;
 	int newpixelval;
 	int nowcorry,nowcorrx;
@@ -63,7 +70,7 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
 							{
 								nowkernelvalue=kernel[jj*knlHeight+ii];
 								nowpixelindex=cordinate2idx(nowcorrx,nowcorry,rgb,imgWidth);
-								nowpixelvalue=(int)origImg[nowpixelindex];
+								nowpixelvalue=origImg[nowpixelindex];
 								newpixelval+=(nowpixelvalue*nowkernelvalue);
 							}
 						}
@@ -77,10 +84,27 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
 			}
 		}
 	}
-
-	printf("TODO: %s:%d\n", __FILE__, __LINE__);
+	*/
+	// Added by Yingchuan
+	for (int row = 0; row < imgHeight; row++)
+		for (int column = 0; column < imgWidth; column++)
+		{
+			int index = row*imgWidth + column;
+			double rgb[3];
+			if (selection == NULL || selection[index] ==1)
+			{	
+				// filter that pixel
+				pixel_filter(rgb, column, row, origImg, imgWidth, imgHeight, kernel, knlWidth, knlHeight, scale, offset);
+				for (int i = 0; i < 3; i++)
+					rsltImg[3*index+i] = rgb[i];
+			}
+			else
+			{
+				for (int i = 0; i < 3; i++)
+					rsltImg[3*index+i] = origImg[3*index+i];
+			}
+		}
 }
-
 /************************ END OF TODO 2 **************************/
 
 
@@ -114,6 +138,7 @@ void pixel_filter(double rsltPixel[3], int x, int y, const unsigned char* origIm
                   const double* kernel, int knlWidth, int knlHeight,
                   double scale, double offset)
 {
+	/*
 	int newpixelval;
 	int nowcorry,nowcorrx;
 	int nowkernelvalue,nowpixelindex,nowpixelvalue;
@@ -137,15 +162,30 @@ void pixel_filter(double rsltPixel[3], int x, int y, const unsigned char* origIm
 		}
 		rsltPixel[rgb]=newpixelval/scale+offset;
 	}
-
-	printf("TODO: %s:%d\n", __FILE__, __LINE__); 
+	*/
+	// Added by Yingchuan
+	for (int rgb = 0; rgb < 3; rgb++)
+	{
+		int crossCorr = 0;
+		for (int u = -knlWidth/2; u < knlWidth/2; u++)
+			for (int v = -knlHeight/2; v < knlWidth/2; v++)
+			{
+				// break when out of boundary
+				if (x+u<0 || x+u>imgWidth || y+v<0 || y+v>imgHeight)
+					break;
+				// G[x,y] = sum_u{-k}{k}sum_v{-k}{k}F[x+u,y+v]H[u,v]
+				// v+knlHeight/2 -- [0,knlHeight]      v+knlWidth/2 -- [0,knlWidth]
+				crossCorr += origImg[3*((y+v)*imgWidth+x+u)+rgb] * kernel[(v+knlHeight/2)*knlWidth+u+knlWidth/2];
+			}
+		rsltPixel[rgb] = crossCorr / scale + offset;
+	}
 }
-
 /************************ END OF TODO 3 **************************/
-
+/*
 int cordinate2idx(int x,int y,int rgb,int imgWidth)
 {
 	int index;
 	index=3*(y*imgWidth+x)+rgb;
 	return index;
 }
+*/

@@ -55,6 +55,7 @@ void InitNodeBuf(Node* nodes, const unsigned char* img, int imgWidth, int imgHei
 			{
 				int rPos = 3*(row*imgWidth+column);
 				double Dlink = sqrt((rsltImg[rPos]*rsltImg[rPos]+rsltImg[rPos+1]*rsltImg[rPos+1]+rsltImg[rPos+2]*rsltImg[rPos+2]) / 3);
+				//printf("%lf ", Dlink);
 				nodes[rPos/3].linkCost[knlNum] = Dlink;
 				if (Dlink > maxD) maxD = Dlink;
 			}
@@ -63,6 +64,7 @@ void InitNodeBuf(Node* nodes, const unsigned char* img, int imgWidth, int imgHei
 	for (int knlNum = 0; knlNum < 8; knlNum++)
 		for (int i = 0; i < imgWidth*imgHeight; i++)
 			nodes[i].linkCost[knlNum] = (maxD - nodes[i].linkCost[knlNum]) * linkLengths[knlNum];
+	//printf("%lf", maxD);
 }
 /************************ END OF TODO 1 ***************************/
 
