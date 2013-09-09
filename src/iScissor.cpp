@@ -158,35 +158,39 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
 					rx = currentx+i;
 					ry = currenty+j;
 					rindex = ry*width+rx;
-					//if r has not been EXPANDED
-					if(nodes[rindex].state != EXPANDED)
+					// Brush Selection
+					if (selection == NULL || selection[rindex] == 1)
 					{
-						//if r is still INITIAL
-						if(nodes[rindex].state == INITIAL)
+						//if r has not been EXPANDED
+						if(nodes[rindex].state != EXPANDED)
 						{
-							nodes[rindex].totalCost = q->totalCost+q->linkCost[indexingNeighbors(i,j)];
-							nodes[rindex].state = ACTIVE;
-							// --> Added by Yingchuan Start
-							nodes[rindex].prevNode = q;
-							// <-- Added by Yingchuan End
-							pq.Insert(nodes+rindex);
-						}
-						else if(nodes[rindex].state == ACTIVE)
-						{
-							//if r is ACTIVE
-							if((q->totalCost+q->linkCost[indexingNeighbors(i,j)]) < nodes[rindex].totalCost)
+							//if r is still INITIAL
+							if(nodes[rindex].state == INITIAL)
 							{
 								nodes[rindex].totalCost = q->totalCost+q->linkCost[indexingNeighbors(i,j)];
-								pq.Update(nodes+rindex);
+								nodes[rindex].state = ACTIVE;
 								// --> Added by Yingchuan Start
 								nodes[rindex].prevNode = q;
 								// <-- Added by Yingchuan End
+								pq.Insert(nodes+rindex);
+							}
+							else if(nodes[rindex].state == ACTIVE)
+							{
+								//if r is ACTIVE
+								if((q->totalCost+q->linkCost[indexingNeighbors(i,j)]) < nodes[rindex].totalCost)
+								{
+									nodes[rindex].totalCost = q->totalCost+q->linkCost[indexingNeighbors(i,j)];
+									pq.Update(nodes+rindex);
+									// --> Added by Yingchuan Start
+									nodes[rindex].prevNode = q;
+									// <-- Added by Yingchuan End
+								}
 							}
 						}
 					}
 				}
-			}
-		}				
+			}				
+		}
 	}
 	//cout<<seedX<<endl<<seedY<<endl;
 	//printf("TODO: %s:%d\n", __FILE__, __LINE__); 

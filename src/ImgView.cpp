@@ -1,6 +1,7 @@
 #include "ImgView.h"
 #include "iScissor.h"
-
+#include <iostream>
+using namespace std;
 ImgView::ImgView(int x, int y, int w, int h, const char* label) : Fl_Double_Window(x, y, w, h, label)
 {
     imgBuf = NULL;
@@ -622,7 +623,7 @@ void ImgView::Filter(void)
 {
     if (imgBuf) {
         unsigned char* range = NULL;
-
+		
         if (fltDesignUI->selection->value()) {
             range = brushSelection;
         }
@@ -1751,16 +1752,16 @@ int ImgView::handle(int c)
 								break;
 							if (brushType == SQUARE_BRUSH)
 								brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
-							else if (brushType == ROUND_BRUSH && u*u + v*v <= brushSize * brushSize)
+							else if (/*brushType == ROUND_BRUSH && */u*u + v*v <= brushSize * brushSize)
 									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
 							// Added for robustness
-							else
+							/*else
 							{
 								printf("brushType Wrong.\n");
 								break;
-							}
+							}*/
 						}
-                    printf("selecting region by brush (1): to be implemented in ImgView.cpp\n");
+                    printf("selecting region by brush (1): PUSH\n");
                     /******************************************************/
                     UpdateImgBufOpacity();
                     UpdateViewBuffer();
@@ -1953,16 +1954,17 @@ int ImgView::handle(int c)
 								break;
 							if (brushType == SQUARE_BRUSH)
 								brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
-							else if (brushType == ROUND_BRUSH && u*u + v*v <= brushSize * brushSize)
+							else if (/*brushType == ROUND_BRUSH && */u*u + v*v <= brushSize * brushSize)
 									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
 							// Added for robustness
-							else
+							/*else
 							{
 								printf("brushType Wrong.\n");
 								break;
-							}
+							}*/
 						}
-                    printf("selecting region by brush (2): to be implemented in ImgView.cpp\n");
+					fltDesignUI->selection->value(1);
+                    printf("selecting region by brush (2): DRAG\n");
                     /******************************************************/
                     UpdateImgBufOpacity();
                     UpdateViewBuffer();
