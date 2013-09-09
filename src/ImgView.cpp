@@ -1963,7 +1963,6 @@ int ImgView::handle(int c)
 								break;
 							}*/
 						}
-					fltDesignUI->selection->value(1);
                     printf("selecting region by brush (2): DRAG\n");
                     /******************************************************/
                     UpdateImgBufOpacity();
