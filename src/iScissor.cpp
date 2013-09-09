@@ -116,23 +116,34 @@ int indexingNeighbors(int i,int j)
 void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const unsigned char* selection, int numExpanded)
 {
 	//state:INITIAL:0,EXPANDED:1,ACTIVE:2
-	int neighborList[8];
+	//int neighborList[8];
 	int currentx,currenty;
 	int rx,ry;
 	int rindex;	
 	int Exnum=0;
-	Node* q;
+	// Node* q; 
+	/* Comment by Yingchuan: Node*q should be declaired in every while iteration
+	   Otherwise it would be overwritten again and again */
 	
 	CTypedPtrHeap<Node> pq;
 	//initialize each node to INITIAL
 	for(int i=0;i<(width*height);i++)
+	// --> Modified by Yingchuan Start
+	{
 		nodes[i].state=0;
+		nodes[i].prevNode = NULL;
+		nodes[i].totalCost = 0;
+	}	
+	// <-- Modified by Yingchuan End
 	//set totalCost of seed be 0
 	nodes[seedY*width+seedX].totalCost=0.0;
 	//insert seed into pq
 	pq.Insert(nodes+seedY*width+seedX);
 	while(!pq.IsEmpty())
 	{
+		// --> Added by Yingchuan Start
+		Node* q;
+		// <-- Added by Yingchuan End
 		//extract node q(current node)
 		q=pq.ExtractMin();
 		//make q as EXPANDED
@@ -161,18 +172,21 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
 						{
 							nodes[rindex].totalCost=q->totalCost+q->linkCost[indexingNeighbors(i,j)];
 							nodes[rindex].state=2;
+							// --> Added by Yingchuan Start
+							nodes[rindex].prevNode = q;
+							// <-- Added by Yingchuan End
 							pq.Insert(nodes+rindex);
 						}
-						else
+						else if(nodes[rindex].state==2)
 						{
 							//if r is ACTIVE
-							if(nodes[rindex].state==2)
+							if((q->totalCost+q->linkCost[indexingNeighbors(i,j)])<nodes[rindex].totalCost)
 							{
-								if((q->totalCost+q->linkCost[indexingNeighbors(i,j)])<nodes[rindex].totalCost)
-								{
-									nodes[rindex].totalCost=q->totalCost+q->linkCost[indexingNeighbors(i,j)];
-									pq.Update(nodes+rindex);
-								}
+								nodes[rindex].totalCost=q->totalCost+q->linkCost[indexingNeighbors(i,j)];
+								pq.Update(nodes+rindex);
+								// --> Added by Yingchuan Start
+								nodes[rindex].prevNode = q;
+								// <-- Added by Yingchuan End
 							}
 						}
 					}
@@ -180,9 +194,9 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
 			}
 		}				
 	}
-	cout<<seedX<<endl<<seedY<<endl;
+	//cout<<seedX<<endl<<seedY<<endl;
 	
-	printf("TODO: %s:%d\n", __FILE__, __LINE__); 
+	//printf("TODO: %s:%d\n", __FILE__, __LINE__); 
 }
 /************************ END OF TODO 4 ***************************/
 
