@@ -167,8 +167,8 @@ void pixel_filter(double rsltPixel[3], int x, int y, const unsigned char* origIm
 	for (int rgb = 0; rgb < 3; rgb++)
 	{
 		double crossCorr = 0;
-		for (int u = -knlWidth/2; u < knlWidth/2; u++)
-			for (int v = -knlHeight/2; v < knlWidth/2; v++)
+		for (int u = -knlWidth/2; u <= knlWidth/2; u++)
+			for (int v = -knlHeight/2; v <= knlWidth/2; v++)
 			{
 				// break when out of boundary
 				if (x+u<0 || x+u>imgWidth || y+v<0 || y+v>imgHeight)
