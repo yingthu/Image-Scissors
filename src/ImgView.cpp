@@ -1742,6 +1742,7 @@ int ImgView::handle(int c)
                      * ensure that the live wire with brush selection works correctly
                      *
                      */
+					// brushSize*brushSize contains the whole circle
 					for (int u = -brushSize; u <= brushSize; u++)
 						for (int v = -brushSize; v <= brushSize; v++)
 						{
@@ -1749,13 +1750,14 @@ int ImgView::handle(int c)
 							if (cntX+u<0 || cntX+u>imgWidth || cntY+v<0 || cntY+v>imgHeight)
 								break;
 							if (brushType == SQUARE_BRUSH)
-							{
 								brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
-							}
+							else if (brushType == ROUND_BRUSH && u*u + v*v <= brushSize * brushSize)
+									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+							// Added for robustness
 							else
 							{
-								if (u*u + v*v <= brushSize * brushSize)
-									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+								printf("brushType Wrong.\n");
+								break;
 							}
 						}
                     printf("selecting region by brush (1): to be implemented in ImgView.cpp\n");
@@ -1942,6 +1944,7 @@ int ImgView::handle(int c)
                      * ensure that the live wire with brush selection works correctly
                      *
                      */
+					// brushSize*brushSize contains the whole circle
 					for (int u = -brushSize; u <= brushSize; u++)
 						for (int v = -brushSize; v <= brushSize; v++)
 						{
@@ -1949,13 +1952,14 @@ int ImgView::handle(int c)
 							if (cntX+u<0 || cntX+u>imgWidth || cntY+v<0 || cntY+v>imgHeight)
 								break;
 							if (brushType == SQUARE_BRUSH)
-							{
 								brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
-							}
+							else if (brushType == ROUND_BRUSH && u*u + v*v <= brushSize * brushSize)
+									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+							// Added for robustness
 							else
 							{
-								if (u*u + v*v <= brushSize * brushSize)
-									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+								printf("brushType Wrong.\n");
+								break;
 							}
 						}
                     printf("selecting region by brush (2): to be implemented in ImgView.cpp\n");

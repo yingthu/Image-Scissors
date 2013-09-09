@@ -90,7 +90,7 @@ void image_filter(double* rsltImg, const unsigned char* origImg, const unsigned 
 		{
 			int index = row*imgWidth + column;
 			double rgb[3];
-			if (selection == NULL || selection[index] ==1)
+			if (selection == NULL || selection[index] == 1)
 			{	
 				// filter that pixel
 				pixel_filter(rgb, column, row, origImg, imgWidth, imgHeight, kernel, knlWidth, knlHeight, scale, offset);

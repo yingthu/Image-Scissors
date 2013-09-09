@@ -6,8 +6,8 @@
 
 #include "correlation.h"
 #include "iScissor.h"
-#include <iostream>
-using namespace std;
+//#include <iostream>
+//using namespace std;
 
 const double linkLengths[8] = { 1.0, SQRT2, 1.0, SQRT2, 1.0, SQRT2, 1.0, SQRT2 };
 
@@ -120,69 +120,63 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
 	int currentx,currenty;
 	int rx,ry;
 	int rindex;	
-	int Exnum=0;
-	// Node* q; 
-	/* Comment by Yingchuan: Node*q should be declaired in every while iteration
-	   Otherwise it would be overwritten again and again */
-	
+	int Exnum = 0;
+	Node* q; 
 	CTypedPtrHeap<Node> pq;
 	//initialize each node to INITIAL
 	for(int i=0;i<(width*height);i++)
 	// --> Modified by Yingchuan Start
 	{
-		nodes[i].state=0;
+		nodes[i].state = INITIAL;
 		nodes[i].prevNode = NULL;
 		nodes[i].totalCost = 0;
 	}	
 	// <-- Modified by Yingchuan End
 	//set totalCost of seed be 0
-	nodes[seedY*width+seedX].totalCost=0.0;
+	nodes[seedY*width+seedX].totalCost = 0.0;
 	//insert seed into pq
 	pq.Insert(nodes+seedY*width+seedX);
 	while(!pq.IsEmpty())
 	{
-		// --> Added by Yingchuan Start
-		Node* q;
-		// <-- Added by Yingchuan End
 		//extract node q(current node)
-		q=pq.ExtractMin();
+		q = pq.ExtractMin();
 		//make q as EXPANDED
-		q->state=1;
+		q->state = EXPANDED;
 		Exnum++;
-		if(Exnum==numExpanded)
+		if(Exnum == numExpanded)
 			break;
-		currentx=q->column;
-		currenty=q->row;
+		currentx = q->column;
+		currenty = q->row;
 		//for each existing neighbor r of q
-		for(int i=-1;i<=1;i++)
+		for(int i = -1; i <= 1; i++)
 		{
-			for(int j=-1;j<=1;j++)
+			for(int j = -1; j <= 1; j++)
 			{
 				//make sure r exists
 				if(((currentx+i)>=0)&&((currenty+j)>=0)&&((currentx+i)<width)&&((currenty+j)<height))
 				{
-					rx=currentx+i;
-					ry=currenty+j;
-					rindex=ry*width+rx;
+					rx = currentx+i;
+					ry = currenty+j;
+					rindex = ry*width+rx;
 					//if r has not been EXPANDED
-					if(nodes[rindex].state!=1)
+					if(nodes[rindex].state != EXPANDED)
 					{
 						//if r is still INITIAL
-						if(nodes[rindex].state==0)
+						if(nodes[rindex].state == INITIAL)
 						{
-							nodes[rindex].totalCost=q->totalCost+q->linkCost[indexingNeighbors(i,j)];
-							nodes[rindex].state=2;
+							nodes[rindex].totalCost = q->totalCost+q->linkCost[indexingNeighbors(i,j)];
+							nodes[rindex].state = ACTIVE;
 							// --> Added by Yingchuan Start
 							nodes[rindex].prevNode = q;
 							// <-- Added by Yingchuan End
 							pq.Insert(nodes+rindex);
 						}
-						else if(nodes[rindex].state==2)
+						else if(nodes[rindex].state == ACTIVE)
 						{
 							//if r is ACTIVE
-							if((q->totalCost+q->linkCost[indexingNeighbors(i,j)])<nodes[rindex].totalCost)
+							if((q->totalCost+q->linkCost[indexingNeighbors(i,j)]) < nodes[rindex].totalCost)
 							{
-								nodes[rindex].totalCost=q->totalCost+q->linkCost[indexingNeighbors(i,j)];
+								nodes[rindex].totalCost = q->totalCost+q->linkCost[indexingNeighbors(i,j)];
 								pq.Update(nodes+rindex);
 								// --> Added by Yingchuan Start
 								nodes[rindex].prevNode = q;
@@ -195,7 +189,6 @@ void LiveWireDP(int seedX, int seedY, Node* nodes, int width, int height, const 
 		}				
 	}
 	//cout<<seedX<<endl<<seedY<<endl;
-	
 	//printf("TODO: %s:%d\n", __FILE__, __LINE__); 
 }
 /************************ END OF TODO 4 ***************************/
