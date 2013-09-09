@@ -1742,7 +1742,22 @@ int ImgView::handle(int c)
                      * ensure that the live wire with brush selection works correctly
                      *
                      */
-
+					for (int u = -brushSize; u <= brushSize; u++)
+						for (int v = -brushSize; v <= brushSize; v++)
+						{
+							// break if out of boundary
+							if (cntX+u<0 || cntX+u>imgWidth || cntY+v<0 || cntY+v>imgHeight)
+								break;
+							if (brushType == SQUARE_BRUSH)
+							{
+								brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+							}
+							else
+							{
+								if (u*u + v*v <= brushSize * brushSize)
+									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+							}
+						}
                     printf("selecting region by brush (1): to be implemented in ImgView.cpp\n");
                     /******************************************************/
                     UpdateImgBufOpacity();
@@ -1927,7 +1942,22 @@ int ImgView::handle(int c)
                      * ensure that the live wire with brush selection works correctly
                      *
                      */
-
+					for (int u = -brushSize; u <= brushSize; u++)
+						for (int v = -brushSize; v <= brushSize; v++)
+						{
+							// break if out of boundary
+							if (cntX+u<0 || cntX+u>imgWidth || cntY+v<0 || cntY+v>imgHeight)
+								break;
+							if (brushType == SQUARE_BRUSH)
+							{
+								brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+							}
+							else
+							{
+								if (u*u + v*v <= brushSize * brushSize)
+									brushSelection[imgWidth*(cntY+v)+cntX+u] = 1;
+							}
+						}
                     printf("selecting region by brush (2): to be implemented in ImgView.cpp\n");
                     /******************************************************/
                     UpdateImgBufOpacity();
