@@ -238,7 +238,34 @@ void MinimumPath(CTypedPtrDblList <Node>* path, int freePtX, int freePtY, Node* 
 
 void SeedSnap(int& x, int& y, unsigned char* img, int width, int height)
 {
-    printf("SeedSnap in iScissor.cpp: to be implemented for extra credit!\n");
+    int windowsize=10;
+	//int wholesize;
+	//wholesize=(windowsize*2+1)*(windowsize*2+1);
+	int tempx,tempy;
+	double maxD = 0.0000;
+	double *rsltImg;
+	for (int knlNum = 0; knlNum < 8; knlNum++)
+	{
+		rsltImg = new double[width*height*3];
+		image_filter(rsltImg, img, NULL, width, height, kernels[knlNum], 3, 3, 1, 0);
+		for (int row = y-windowsize; row < y+windowsize; row++)
+			for (int column = x-windowsize; column < x+windowsize; column++)
+			{
+				int rPos = 3*(row*width+column);
+				double Dlink = sqrt((rsltImg[rPos]*rsltImg[rPos]+rsltImg[rPos+1]*rsltImg[rPos+1]+rsltImg[rPos+2]*rsltImg[rPos+2]) / 3);
+				if (Dlink > maxD)
+				{
+					maxD = Dlink;
+					tempx=column;
+					tempy=row;
+				}
+			}
+		delete [] rsltImg;
+	}
+	x=tempx;
+	y=tempy;
+
+	printf("SeedSnap implemented, give me extra credit!\n");
 }
 
 //generate a cost graph from original image and node buffer with all the link costs;
